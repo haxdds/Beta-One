@@ -33,7 +33,8 @@ class TicTacToeMCTS(MonteCarloTree):
             return NEITHER
 
     def best_move(self, num_iterations, moves_played):
-        self.search_from_node(100, moves_played)
+        self.search_from_node(num_iterations, moves_played)
+        return self.choose_best_move(moves_played)
 
 
 

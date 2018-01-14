@@ -29,7 +29,7 @@ class MonteCarloTree:
     def __init__(self, move_list):
         self.root = Node(None)
         self.move_list = move_list
-        self.move_set = {move: True for move in move_list}
+        self.move_set = {move: False for move in move_list}
         self.move_order = []
 
     def __str__(self):
@@ -74,8 +74,8 @@ class MonteCarloTree:
             return node
         else:
             [node.add_child(Node(move)) for move in [move for move in self.move_set.keys() if self.move_set[move] == False]]
-            if node.children is None:
-                x = 2
+            if node.children is None or node.children.__len__() is 0:
+                return node
             selected_node = random.choice(node.children)
             if update_moves:
                 self.move_set[selected_node.move] = True
@@ -103,7 +103,7 @@ class MonteCarloTree:
         while temp_node != None:
             temp_node.total += 1
             if res == WIN:
-                temp_node.score += 1
+                temp_node.score += 10
             elif res == DRAW:
                 temp_node.score += 0.5
             temp_node = temp_node.parent
@@ -129,9 +129,18 @@ class MonteCarloTree:
             self.move_set = {move: False for move in self.move_list}
             for move in moves_played:
                 self.move_set[move] = True
-            self.move_order = moves_played
+            self.move_order = moves_played.copy()
             selected_node = self.selection(temp_node)
             selected_node = self.expansion(selected_node, False)
             self.simulation(selected_node)
+
+    def choose_best_move(self, moves_played):
+        temp_node = self.root
+        for move in moves_played:
+            temp_node = (node for node in temp_node.children if node.move == move).__next__()
+        children_win_over_plays = [x.score/x.total for x in temp_node.children]
+        temp_node = temp_node.children[children_win_over_plays.index(max(children_win_over_plays))]
+        return temp_node.move
+
 
 
