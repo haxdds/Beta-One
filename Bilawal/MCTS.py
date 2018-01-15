@@ -7,6 +7,7 @@ LOSS = 2
 DRAW = 3
 NEITHER = 0
 
+
 class Node:
 
     def __init__(self, move):
@@ -93,7 +94,18 @@ class MonteCarloTree:
                 break
             else:
                 # choose random move and continue
-                moves_left_to_play = [move for move in moves_played.keys() if moves_played[move] == False]
+                moves_left_to_play = [move for move in moves_played.keys() if moves_played[move] is False]
+                # play forced win if exists
+                # if moves_list.__len__() > 4:
+                #     broken = False
+                #     for move in moves_left_to_play:
+                #         if self.position_result(moves_list + [move]) in (WIN, LOSS):
+                #             next_move = move
+                #             broken = True
+                #             break
+                #     if not broken:
+                #         next_move = random.choice(moves_left_to_play)
+                # else:
                 next_move = random.choice(moves_left_to_play)
                 moves_list.append(next_move)
                 moves_played[next_move] = True
@@ -103,9 +115,11 @@ class MonteCarloTree:
         while temp_node != None:
             temp_node.total += 1
             if res == WIN:
-                temp_node.score += 10
+                temp_node.score += 1
             elif res == DRAW:
-                temp_node.score += 0.5
+                temp_node.score += 0
+            elif res == LOSS:
+                temp_node.score -= 1
             temp_node = temp_node.parent
 
     def search(self, num_iterations):
@@ -138,8 +152,10 @@ class MonteCarloTree:
         temp_node = self.root
         for move in moves_played:
             temp_node = (node for node in temp_node.children if node.move == move).__next__()
-        children_win_over_plays = [x.score/x.total for x in temp_node.children]
-        temp_node = temp_node.children[children_win_over_plays.index(max(children_win_over_plays))]
+        beta_one_started = moves_played.__len__() % 2 == 0
+        children_win_over_plays = [x.score for x in temp_node.children]
+        print(list(zip(children_win_over_plays, map(lambda x: x.move, temp_node.children))))
+        temp_node = temp_node.children[children_win_over_plays.index(max(children_win_over_plays) if beta_one_started else min(children_win_over_plays))]
         return temp_node.move
 
 

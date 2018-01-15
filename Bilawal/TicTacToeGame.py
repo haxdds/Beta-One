@@ -34,7 +34,7 @@ class TicTacToeGame:
         moves_played = []
         first_move = 1
         while move_number <= 9:
-            self.print_board(moves_played)
+
             if move_number % 2 == first_move:
                 print("BETA ONE's TURN")
                 move = self.tree.best_move(5000, moves_played)
@@ -49,15 +49,28 @@ class TicTacToeGame:
                     else:
                         print("INVALID MOVE. TRY AGAIN.")
             res = self.tree.position_result(moves_played)
+            self.print_board(moves_played)
             if res in (WIN, LOSS, DRAW):
-                if res == WIN:
-                    print("YOU WON\n\n\n")
-                elif res == LOSS:
-                    print("YOU SUCK BOI\n\n\n")
+                if move_number % 2 == first_move:
+                    if res == WIN:
+                        print("YOU LOST\n\n\n")
+                    elif res == LOSS:
+                        print("YOU WON\n\n\n")
+                    else:
+                        print("DRAW!\n\n\n")
+                    break
                 else:
-                    print("DRAW!\n\n\n")
-                break
+                    if res == WIN:
+                        print("YOU WON\n\n\n")
+                    elif res == LOSS:
+                        print("YOU SUCK BOI\n\n\n")
+                    else:
+                        print("DRAW!\n\n\n")
+                    break
             move_number += 1
 
     def play(self):
         self.loop()
+
+
+
